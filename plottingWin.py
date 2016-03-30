@@ -6,6 +6,7 @@ GUI for training and plotting the activation times.
 
 from pyqtgraph.Qt import QtGui, QtCore
 from GuiWindowTraining import GuiWindowTraining
+from GuiWindowDocks import GuiWindowDocks
 import numpy as np
 import scipy.io as sio
 
@@ -15,13 +16,13 @@ vals = np.array(mat_contents['bdfdat']);
 # Start Qt event loop unless running in interactive mode.
 if __name__ == '__main__':
     import sys
-    junk = GuiWindowTraining()
+    #junk = GuiWindowTraining()
+    junk = GuiWindowDocks()
     """
     Create data here and add to the curve
     """
-    print vals.shape
+    #print vals.shape
     data = vals
-    junk.setData(data[0:256, 0:9001]/100, 256, 9000)
-
+    junk.setData(data[32:65, 0:9001]/100, 32, 9000)
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()

@@ -5,9 +5,10 @@ import pyqtgraph.console
 
 class GuiWindowTraining:
     def __init__(self):
+        '''
+            Initialise dock window properties
+        '''
         self.app = QtGui.QApplication([])
-        #self.mwin = QtGui.QMainWindow()
-        #self.ar = DockArea()
         self.win = pg.GraphicsWindow("Gui for training")
         self.p1 = self.win.addPlot(title="Plots")
         self.p2 = self.win.addPlot(title="Zoom on the selected regions")
