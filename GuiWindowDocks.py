@@ -2,6 +2,9 @@ from pyqtgraph.Qt import QtGui
 import pyqtgraph as pg
 from TrainingData import TrainingData
 from pyqtgraph.dockarea import *
+from WekaInterface import WekaInterface
+from SignalAnalyser import SignalAnalyser
+import numpy as np
 
 class GuiWindowDocks:
     def __init__(self):
@@ -178,3 +181,8 @@ class GuiWindowDocks:
 
     def process_data(self):
         self.trainingData.extract_features()
+        analyser = SignalAnalyser()
+        test_data = np.reshape(self.data, -1)
+        features = analyser.process_data(test_data, len(test_data))
+        weka_write = WekaInterface(features, 'test_data.arff')
+        weka_write.arff_write()

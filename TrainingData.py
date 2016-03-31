@@ -1,5 +1,6 @@
 import numpy as np
 from SignalAnalyser import SignalAnalyser
+from WekaInterface import WekaInterface
 
 class TrainingData:
 
@@ -13,11 +14,9 @@ class TrainingData:
         """
         self.plotDat = np.zeros([1, 200000], dtype=float)
         self.plotEvent = np.zeros([1, 200000], dtype=int)
-        self.analysed_signal = SignalAnalyser()
 
     def setData(self, data):
         self.data = np.array(data)
-        print self.data.shape
 
     def addRegion(self, region):
         self.regions.append(region)
@@ -62,4 +61,8 @@ class TrainingData:
         del self.regions[:]
 
     def extract_features(self):
-        self.analysed_signal.process_data(self.plotDat[0][:], self.plotEvent[0][:], self.plotLength)
+        analyser = SignalAnalyser()
+        features = analyser.process_data(self.plotDat[0][:], self.plotLength)
+        weka_write = WekaInterface(features, 'training_data.arff')
+        weka_write.arff_write(self.plotEvent[0][0:self.plotLength]/5)
+

@@ -23,6 +23,6 @@ if __name__ == '__main__':
     """
     #print vals.shape
     data = vals
-    junk.setData(data[32:65, 0:9001]/100, 32, 9000)
+    junk.setData(data[33:65, 0:9001]/100, 32, 9000)
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()

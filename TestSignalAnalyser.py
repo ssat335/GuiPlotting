@@ -129,11 +129,4 @@ array = np.array([3.04033244e-01, 2.96285581e-01, 1.80005980e-01, 1.35150639e-01
 
 event = np.zeros([1, len(array)])
 analyser = SignalAnalyser()
-analyser.process_data(array, event, len(array))
-plt.figure(500)
-plt.plot(array)
-for i in range(1, 31, 1):
-    axes = plt.figure(i)
-    plt.plot(analyser.features[i, :])
-
-plt.show()
+analyser.process_data(array, len(array))

@@ -60,7 +60,6 @@ class GuiWindowTraining:
     def setData(self, data, nPlots, nSize):
         self.setCurveItem(nPlots, nSize)
         for i in range(nPlots):
-            print data.shape
             self.curves_left[i].setData(data[i])
             self.curves_right[i].setData(data[i])
 
@@ -90,5 +89,3 @@ class GuiWindowTraining:
         vb = self.p2.vb
         if self.p2.sceneBoundingRect().contains(pos):
             mousePoint = vb.mapSceneToView(pos)
-            print mousePoint.x()
-            print mousePoint.y()

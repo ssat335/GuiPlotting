@@ -92,8 +92,6 @@ def onClick(evt):
     pos = evt.scenePos()
     if p2.sceneBoundingRect().contains(pos):
         mousePoint = vb.mapSceneToView(pos)
-        print mousePoint.x()
-        print mousePoint.y()
 
 proxy = pg.SignalProxy(p2.scene().sigMouseMoved, rateLimit=60, slot=mouseMoved)
 rect.sigRegionChanged.connect(updatePlot)
