@@ -5,6 +5,9 @@ from pyqtgraph.dockarea import *
 from WekaInterface import WekaInterface
 from SignalAnalyser import SignalAnalyser
 import numpy as np
+from Tkinter import Tk
+from tkFileDialog import askopenfilename
+from ARFFcsvReader import ARFFcsvReader
 
 class GuiWindowDocks:
     def __init__(self):
@@ -37,6 +40,7 @@ class GuiWindowDocks:
         self.saveBtn_nonEvents.clicked.connect(lambda: self.add_non_events())
         self.undoBtn.clicked.connect(lambda: self.undo())
         self.analyseBtn.clicked.connect(lambda: self.process_data())
+        self.readPredictedVal.clicked.connect(lambda: self.read_predicted())
         self.win.show()
 
     def addDockWidgetsControl(self):
@@ -46,11 +50,13 @@ class GuiWindowDocks:
         self.saveBtn_nonEvents = QtGui.QPushButton('Save As Non-Events')
         self.undoBtn = QtGui.QPushButton('Undo')
         self.analyseBtn = QtGui.QPushButton('Analyse')
+        self.readPredictedVal = QtGui.QPushButton('Read Weka CSV')
         w1.addWidget(label, row=0, col=0)
         w1.addWidget(self.saveBtn_events, row=1, col=0)
         w1.addWidget(self.saveBtn_nonEvents, row=2, col=0)
         w1.addWidget(self.undoBtn, row=3, col=0)
         w1.addWidget(self.analyseBtn, row=4, col=0)
+        w1.addWidget(self.readPredictedVal, row=5,col=0)
         self.d_control.addWidget(w1, row=1, colspan=2)
 
 
@@ -77,6 +83,10 @@ class GuiWindowDocks:
             c2.setPos(0, i * 20)
             self.curves_right.append(c2)
             self.w2.addItem(c2)
+        self.s1 = pg.ScatterPlotItem(size=10, pen=pg.mkPen(None), brush=pg.mkBrush(255, 255, 255, 120))
+        self.s2 = pg.ScatterPlotItem(size=10, pen=pg.mkPen(None), brush=pg.mkBrush(255, 255, 255, 120))
+        self.w1.addItem(self.s1)
+        self.w2.addItem(self.s2)
         self.d_plot.addWidget(self.w1, row=0, col=0)
         self.d_plot.addWidget(self.w2, row=0, col=1)
         self.d_train.addWidget(self.w3, row=0, col=0)
@@ -178,6 +188,23 @@ class GuiWindowDocks:
         self.curve_bottom[1].setData(self.trainingData.plotEvent.flatten()[0:self.trainingData.plotLength])
         self.w3.setXRange(0, self.trainingData.plotLength, padding=0)
         self.w3.setYRange(-10, 10, padding=0)
+
+    def read_predicted(self):
+        Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+        filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
+        if filename == u'':
+            return
+        test = ARFFcsvReader(filename)
+        prediction = np.asarray(test.get_prediction())
+        diff = np.diff(prediction)
+        linear_at = np.array(np.where(diff == 1))
+        pos = []
+        for val in linear_at.transpose():
+            pos.append([int(val/9001), int(val % 9001)])
+        pos_np = np.asarray(pos).transpose()
+        print pos_np.shape
+        self.s1.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
+        self.s2.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
 
     def process_data(self):
         self.trainingData.extract_features()
