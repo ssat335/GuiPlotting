@@ -6,7 +6,6 @@ class WekaInterface:
     def __init__(self, data, file_name='test_data.arff'):
         self.data = np.transpose(data)
         self.file_name = file_name
-        self.arff_write()
 
     def arff_write(self, event=[]):
         ''' Write ARFF object file as required by analyser GUI.
@@ -26,7 +25,7 @@ class WekaInterface:
             ndarray = np.asarray(np.hstack((self.data, hcat_event)))
         for i in range(0, cols, 1):
             attributes.append(('attribute' + str(i), 'NUMERIC'))
-        attributes.append(('event', ['TRUE', 'FALSE']))
+        attributes.append(('event', ['1.0', '0.0']))
         vals = []
         for i in range(0, rows, 1):
             vals.append(ndarray[i, :])

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from SignalAnalyser import SignalAnalyser
+from FeatureAnalyser import FeatureAnalyser
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
@@ -128,5 +128,5 @@ array = np.array([3.04033244e-01, 2.96285581e-01, 1.80005980e-01, 1.35150639e-01
 ,-1.45293248e-01, 8.37022119e-01])
 
 event = np.zeros([1, len(array)])
-analyser = SignalAnalyser()
+analyser = FeatureAnalyser()
 analyser.process_data(array, len(array))

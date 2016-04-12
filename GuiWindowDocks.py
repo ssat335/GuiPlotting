@@ -1,25 +1,33 @@
-from pyqtgraph.Qt import QtGui
-import pyqtgraph as pg
-from TrainingData import TrainingData
-from pyqtgraph.dockarea import *
-from WekaInterface import WekaInterface
-from SignalAnalyser import SignalAnalyser
+""" Standard imports """
 import numpy as np
+
+# Main GUI support
+import pyqtgraph as pg
+from pyqtgraph.Qt import QtGui
+from pyqtgraph.dockarea import *
+
+# File explorer
 from Tkinter import Tk
 from tkFileDialog import askopenfilename
+
+# Locally-developed modules
+from TrainingData import TrainingData
 from ARFFcsvReader import ARFFcsvReader
+from WekaInterface import WekaInterface
+from FeatureAnalyser import FeatureAnalyser
 
 class GuiWindowDocks:
     def __init__(self):
-        '''
-            Initialise dock window properties
-        '''
+        """
+        Initialise the properties of the GUI. This part of the code sets the docks, sizes
+        :return: NULL
+        """
         self.app = QtGui.QApplication([])
         self.win = QtGui.QMainWindow()
         area = DockArea()
         self.d_control = Dock("Dock Controls", size=(50, 200))
         self.d_plot = Dock("Dock Plots", size=(500, 200))
-        self.d_train  = Dock("Training Signla", size=(500, 50))
+        self.d_train  = Dock("Training Signal", size=(500, 50))
         area.addDock(self.d_control, 'left')
         area.addDock(self.d_plot, 'right')
         area.addDock(self.d_train, 'bottom', self.d_plot)
@@ -64,8 +72,8 @@ class GuiWindowDocks:
         self.w1 = pg.PlotWidget(title="Plots of the slow-wave data")
         self.w2 = pg.PlotWidget(title="Plots of zoomed-in slow-wave data")
         self.w3 = pg.PlotWidget(title="Selected Data for Training")
-        c = pg.PlotCurveItem()
-        c_event = pg.PlotCurveItem()
+        c = pg.PlotCurveItem(pen=pg.mkPen('r', width=2))
+        c_event = pg.PlotCurveItem(pen=pg.mkPen('y', width=2))
         self.curve_bottom.append(c)
         self.curve_bottom.append(c_event)
         self.w3.addItem(c)
@@ -190,8 +198,8 @@ class GuiWindowDocks:
         self.w3.setYRange(-10, 10, padding=0)
 
     def read_predicted(self):
-        Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
-        filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
+        Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
+        filename = askopenfilename()  # show an "Open" dialog box and return the path to the selected file
         if filename == u'':
             return
         test = ARFFcsvReader(filename)
@@ -207,9 +215,16 @@ class GuiWindowDocks:
         self.s2.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
 
     def process_data(self):
-        self.trainingData.extract_features()
-        analyser = SignalAnalyser()
+
+        training_analyser = FeatureAnalyser()
+        training_features = training_analyser.process_data\
+                            ([self.trainingData.plotDat[0][0:self.trainingData.plotLength]])
+        weka_write = WekaInterface(training_features, 'training_data.arff')
+        weka_write.arff_write(self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5)
+
         test_data = np.reshape(self.data, -1)
-        features = analyser.process_data(test_data, len(test_data))
-        weka_write = WekaInterface(features, 'test_data.arff')
+        test_data_analyser = FeatureAnalyser()
+        # FeatureAnalyser requires the 1d data to be passed as array of an array
+        test_data_features = test_data_analyser.process_data([test_data])
+        weka_write = WekaInterface(test_data_features, 'test_data.arff')
         weka_write.arff_write()

@@ -1,6 +1,8 @@
 import numpy as np
-from SignalAnalyser import SignalAnalyser
+from FeatureAnalyser import FeatureAnalyser
 from WekaInterface import WekaInterface
+import scipy.io as sio
+
 
 class TrainingData:
 
@@ -60,9 +62,13 @@ class TrainingData:
     def clearRegion(self):
         del self.regions[:]
 
+'''
     def extract_features(self):
-        analyser = SignalAnalyser()
-        features = analyser.process_data(self.plotDat[0][:], self.plotLength)
+        analyser = FeatureAnalyser()
+        # sio.savemat('training_data_test.mat', {'vect': self.plotDat[0][0:self.plotLength]})
+        # sio.savemat('training_event_marks.mat', {'vect': self.plotEvent[0][0:self.plotLength]})
+        # FeatureAnalyser requires the 1d data to be passed as array of an array
+        features = analyser.process_data([self.plotDat[0][0:self.plotLength]])
         weka_write = WekaInterface(features, 'training_data.arff')
         weka_write.arff_write(self.plotEvent[0][0:self.plotLength]/5)
-
+'''

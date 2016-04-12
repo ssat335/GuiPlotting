@@ -4,7 +4,7 @@ import csv
 class ARFFcsvReader:
     """
     Operates on WEKA generated output file of predictions.
-    The file is parsed and the predictions are returned a 1D nump array.
+    The file is parsed and the predictions are returned as 1D numpy array.
     """
     def __init__(self, file_name):
         """
