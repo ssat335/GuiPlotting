@@ -15,7 +15,9 @@ class FeatureAnalyser:
         :param plot: Input values to be processed for generating features
         :return: features in #features X #sample size
         """
+        print plot
         self.data = np.asarray(plot)
+        print self.data.shape
         temp, self.len = self.data.shape
         print self.len
         '''Obtain the features'''
@@ -32,7 +34,7 @@ class FeatureAnalyser:
             self.features[i + 10, :] = self.shift_signals(self.data, 90*i)
         for i in range(1, 19, 1):
             self.features[i + 13, :] = gaussian_filter1d(self.features[int((i-1)/3) + 7, :], 6 * pow(2, ((i - 1) % 3)))
-        self.features[32, :] = np.square(self.features[0, :])
+        self.features[32, :] = np.square(self.features[1, :])
         return self.features
 
     def apply_diff(self, data):

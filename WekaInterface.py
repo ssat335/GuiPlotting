@@ -1,6 +1,6 @@
 import arff
 import numpy as np
-
+import os
 
 class WekaInterface:
     def __init__(self, data, file_name='test_data.arff'):
@@ -14,12 +14,18 @@ class WekaInterface:
         '''
         attributes = []
         (rows, cols) = np.shape(self.data)
-        if np.array(event).size == 0:
+        if np.array(event).size == 0 or event is None:
             hcat = np.empty((rows, 1))
             hcat.fill(np.NAN)
             ndarray = np.asarray(np.hstack((self.data, hcat)))
+            '''
+            No need to write the test data every time. Check if exists and if true return null
+            '''
+            print os.getcwd() + self.file_name
+            if os.path.exists(os.getcwd() + str('/') + self.file_name):
+                print '{} already exists. Not keen to rewrite the same thing again'.format(self.file_name)
+                return
         else:
-            #hcat_event = np.transpose(np.array(event))
             hcat_event = np.empty((len(event), 1))
             hcat_event[:, 0] = np.transpose(np.array(event))
             ndarray = np.asarray(np.hstack((self.data, hcat_event)))

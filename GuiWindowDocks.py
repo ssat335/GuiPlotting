@@ -1,14 +1,11 @@
 """ Standard imports """
 import numpy as np
-
+from multiprocessing import Process
 # Main GUI support
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui
 from pyqtgraph.dockarea import *
 
-# File explorer
-from Tkinter import Tk
-from tkFileDialog import askopenfilename
 
 # Locally-developed modules
 from TrainingData import TrainingData
@@ -27,7 +24,7 @@ class GuiWindowDocks:
         area = DockArea()
         self.d_control = Dock("Dock Controls", size=(50, 200))
         self.d_plot = Dock("Dock Plots", size=(500, 200))
-        self.d_train  = Dock("Training Signal", size=(500, 50))
+        self.d_train = Dock("Training Signal", size=(500, 50))
         area.addDock(self.d_control, 'left')
         area.addDock(self.d_plot, 'right')
         area.addDock(self.d_train, 'bottom', self.d_plot)
@@ -176,6 +173,9 @@ class GuiWindowDocks:
             self.elec.append([int(round(mousePoint.y()/20)), int(round(mousePoint.x()))])
             self.trainingData.addRegion([int(round(mousePoint.y()/20)), int(round(mousePoint.x()))])
 
+    """
+    The binding functions for different gui command buttons.
+    """
     def analyse_data(self):
         self.trainingData.add_events()
         self.curve_bottom[0].setData(self.trainingData.plotDat.flatten()[0:self.trainingData.plotLength])
@@ -198,8 +198,7 @@ class GuiWindowDocks:
         self.w3.setYRange(-10, 10, padding=0)
 
     def read_predicted(self):
-        Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
-        filename = askopenfilename()  # show an "Open" dialog box and return the path to the selected file
+        filename = QtGui.QFileDialog.getOpenFileName(None, 'Open ARFF WEKA generated output file')
         if filename == u'':
             return
         test = ARFFcsvReader(filename)
@@ -207,8 +206,9 @@ class GuiWindowDocks:
         diff = np.diff(prediction)
         linear_at = np.array(np.where(diff == 1))
         pos = []
+        length = len(self.data[1])
         for val in linear_at.transpose():
-            pos.append([int(val/9001), int(val % 9001)])
+            pos.append([int(val/length), int(val % length)])
         pos_np = np.asarray(pos).transpose()
         print pos_np.shape
         self.s1.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
@@ -216,15 +216,20 @@ class GuiWindowDocks:
 
     def process_data(self):
 
-        training_analyser = FeatureAnalyser()
-        training_features = training_analyser.process_data\
-                            ([self.trainingData.plotDat[0][0:self.trainingData.plotLength]])
-        weka_write = WekaInterface(training_features, 'training_data.arff')
-        weka_write.arff_write(self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5)
-
         test_data = np.reshape(self.data, -1)
-        test_data_analyser = FeatureAnalyser()
+        data = self.trainingData.plotDat[0][0:self.trainingData.plotLength]
+        events = self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5
+        Process(target=self.process_thread, args=(data, events)).start()
+        Process(target=self.process_thread, args=[test_data]).start()
+
+    def process_thread(self, data, event=None):
+        training_analyser = FeatureAnalyser()
         # FeatureAnalyser requires the 1d data to be passed as array of an array
-        test_data_features = test_data_analyser.process_data([test_data])
-        weka_write = WekaInterface(test_data_features, 'test_data.arff')
-        weka_write.arff_write()
+        training_features = training_analyser.process_data([data])
+        import config_global as cg
+        if event is None:
+            output_name = cg.test_file_name
+        else:
+            output_name = cg.training_file_name
+        weka_write = WekaInterface(training_features, output_name)
+        weka_write.arff_write(event)
