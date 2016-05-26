@@ -12,6 +12,7 @@ from TrainingData import TrainingData
 from ARFFcsvReader import ARFFcsvReader
 from WekaInterface import WekaInterface
 from FeatureAnalyser import FeatureAnalyser
+from ClassifySlowWavesScikit import ClassifySlowWavesScikit
 
 class GuiWindowDocks:
     def __init__(self):
@@ -46,6 +47,7 @@ class GuiWindowDocks:
         self.undoBtn.clicked.connect(lambda: self.undo())
         self.analyseBtn.clicked.connect(lambda: self.process_data())
         self.readPredictedVal.clicked.connect(lambda: self.read_predicted())
+        self.analyseInternal.clicked.connect(lambda: self.analyse_internal())
         self.win.show()
 
     def addDockWidgetsControl(self):
@@ -56,12 +58,14 @@ class GuiWindowDocks:
         self.undoBtn = QtGui.QPushButton('Undo')
         self.analyseBtn = QtGui.QPushButton('Analyse')
         self.readPredictedVal = QtGui.QPushButton('Read Weka CSV')
+        self.analyseInternal = QtGui.QPushButton('SciKit Analyse')
         w1.addWidget(label, row=0, col=0)
         w1.addWidget(self.saveBtn_events, row=1, col=0)
         w1.addWidget(self.saveBtn_nonEvents, row=2, col=0)
         w1.addWidget(self.undoBtn, row=3, col=0)
         w1.addWidget(self.analyseBtn, row=4, col=0)
         w1.addWidget(self.readPredictedVal, row=5,col=0)
+        w1.addWidget(self.analyseInternal, row=6, col=0)
         self.d_control.addWidget(w1, row=1, colspan=2)
 
 
@@ -233,3 +237,27 @@ class GuiWindowDocks:
             output_name = cg.training_file_name
         weka_write = WekaInterface(training_features, output_name)
         weka_write.arff_write(event)
+
+    def analyse_internal(self):
+        print "Works"
+        test_data = np.reshape(self.data, -1)
+        data = self.trainingData.plotDat[0][0:self.trainingData.plotLength]
+        events = self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5
+        training_analyser = FeatureAnalyser()
+        training_features_training = training_analyser.process_data([data])
+        # FeatureAnalyser requires the 1d data to be passed as array of an array
+        test_data_analyser = FeatureAnalyser()
+        # FeatureAnalyser requires the 1d data to be passed as array of an array
+        test_data_features = test_data_analyser.process_data([test_data])
+        classifier = ClassifySlowWavesScikit()
+        prediction = classifier.classify_data(training_features_training, events, test_data_features)
+        diff = np.diff(prediction)
+        linear_at = np.array(np.where(diff == 1))
+        pos = []
+        length = len(self.data[1])
+        for val in linear_at.transpose():
+            pos.append([int(val/length), int(val % length)])
+        pos_np = np.asarray(pos).transpose()
+        print pos_np.shape
+        self.s1.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
+        self.s2.addPoints(x=pos_np[1], y=(pos_np[0] * 20))

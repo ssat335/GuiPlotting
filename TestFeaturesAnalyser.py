@@ -13,7 +13,7 @@ class TestFeaturesAnalyser(unittest.TestCase):
         analyser = FeatureAnalyser()
         data = analyser.process_data(data.transpose())
         (rows, cols) = data.shape
-        for i in [0,33]:
+        for i in [0,32]:
             plt.figure(i)
             plt.plot(data[i][:])
         plt.subplots_adjust(wspace=0, hspace=0)

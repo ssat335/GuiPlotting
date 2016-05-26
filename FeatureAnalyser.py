@@ -28,13 +28,14 @@ class FeatureAnalyser:
             self.features[i + 1, :] = gaussian_filter1d(self.data, 6 * pow(2, (i-1)))
         for i in range(1, 4, 1):
             self.features[i + 4, :] = self.apply_diff(self.features[i, :])
-        for i in range(1, 4, 1):
-            self.features[i + 5, :] = self.shift_signals(self.data, -90*i)
-        for i in range(1, 4, 1):
-            self.features[i + 10, :] = self.shift_signals(self.data, 90*i)
-        for i in range(1, 19, 1):
-            self.features[i + 13, :] = gaussian_filter1d(self.features[int((i-1)/3) + 7, :], 6 * pow(2, ((i - 1) % 3)))
-        self.features[32, :] = np.square(self.features[1, :])
+        #for i in range(1, 4, 1):
+        #    self.features[i + 5, :] = self.shift_signals(self.data, -90*i)
+        #for i in range(1, 4, 1):
+        #    self.features[i + 10, :] = self.shift_signals(self.data, 90*i)
+        #for i in range(1, 19, 1):
+        #    self.features[i + 13, :] = gaussian_filter1d(self.features[int((i-1)/3) + 7, :], 6 * pow(2, ((i - 1) % 3)))
+        #self.features[32, :] = np.square(self.features[1, :])
+        self.features[8, :] = np.square(self.features[1, :])
         return self.features
 
     def apply_diff(self, data):
