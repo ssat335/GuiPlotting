@@ -15,4 +15,4 @@ An implementation of a event detection package for gastric electrophysiology.
 
 Input the test data details in plottingWin.py
 Select the training data from the signal.
-Choose either WEKA based prediction of scikit-learn based prediction.
+Choose either WEKA based prediction or scikit-learn based prediction.
