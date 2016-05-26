@@ -1,6 +1,6 @@
 # Detection package
 
-An implementation of a a event detection package for gastric electrophysiology.
+An implementation of a event detection package for gastric electrophysiology.
 
 ## Supported python versions:
 * Python 2.7
@@ -15,4 +15,4 @@ An implementation of a a event detection package for gastric electrophysiology.
 
 Input the test data details in plottingWin.py
 Select the training data from the signal.
-Choose either WEKA based prediction of SciKitlearn prediction.
+Choose either WEKA based prediction of scikit-learn based prediction.

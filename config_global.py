@@ -1,5 +1,6 @@
 """
-A module of functions for easy configuration.
+    Author: Shameer Sathar
+    Description: A module of functions for easy configuration.
 """
 
 import os

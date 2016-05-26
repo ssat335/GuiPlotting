@@ -1,4 +1,11 @@
+
+"""
+    Author: Shameer Sathar
+"""
+
 #!/usr/bin/python
+
+
 
 from FeatureAnalyser import FeatureAnalyser
 import numpy as np

@@ -1,3 +1,8 @@
+"""
+    Author: Shameer Sathar
+    Description: Deal with training data.
+"""
+
 import numpy as np
 from FeatureAnalyser import FeatureAnalyser
 from WekaInterface import WekaInterface

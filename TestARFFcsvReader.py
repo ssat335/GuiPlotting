@@ -1,3 +1,7 @@
+"""
+    Author: Shameer Sathar
+"""
+
 from ARFFcsvReader import ARFFcsvReader
 import numpy as np
 

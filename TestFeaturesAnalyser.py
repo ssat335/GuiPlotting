@@ -1,3 +1,7 @@
+"""
+    Author: Shameer Sathar
+"""
+
 import unittest
 from FeatureAnalyser import FeatureAnalyser
 import numpy as np

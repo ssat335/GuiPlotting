@@ -1,3 +1,8 @@
+"""
+    Author: Shameer Sathar
+    Description: Provide interface for WEKA ARFF files.
+"""
+
 import arff
 import numpy as np
 import os

@@ -1,6 +1,7 @@
 """
-    Author: Lasse Regin Nielsen
-    Author: Shameer Sathar 2016 Modified for fit.
+    Author: Shameer Sathar
+    Description: Simple implementation of a Support Vector Machine using the
+        Sequential Minimal Optimization (SMO) algorithm for training.
 """
 from __future__ import division, print_function
 import os
@@ -8,11 +9,9 @@ import numpy as np
 import random as rnd
 filepath = os.path.dirname(os.path.abspath(__file__))
 
+
 class SVM():
-    """
-        Simple implementation of a Support Vector Machine using the
-        Sequential Minimal Optimization (SMO) algorithm for training.
-    """
+
     def __init__(self, max_iter=10000, kernel_type='linear', C=1.0, epsilon=0.001):
         self.kernels = {
             'linear' : self.kernel_linear,

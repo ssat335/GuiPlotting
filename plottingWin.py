@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-GUI for training and plotting the activation times.
+    Author: Shameer Sathar
+    Description: GUI for training and plotting the activation times.
 """
 
 from pyqtgraph.Qt import QtGui, QtCore

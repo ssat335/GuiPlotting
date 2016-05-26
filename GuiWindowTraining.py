@@ -1,3 +1,8 @@
+"""
+    Author: Shameer Sathar
+    Description: A module of processing the training data.
+"""
+
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *

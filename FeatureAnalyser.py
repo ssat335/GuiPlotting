@@ -1,3 +1,8 @@
+"""
+    Author: Shameer Sathar
+    Description: A module of generating features for the signals.
+"""
+
 from scipy.signal import savgol_filter
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter1d

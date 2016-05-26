@@ -1,4 +1,10 @@
 """ Standard imports """
+
+"""
+    Author: Shameer Sathar
+    Description: Provide Gui Interface.
+"""
+
 import numpy as np
 from multiprocessing import Process
 # Main GUI support
