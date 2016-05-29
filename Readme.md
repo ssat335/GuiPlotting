@@ -4,7 +4,6 @@ An implementation of a event detection package for gastric electrophysiology.
 
 ## Supported python versions:
 * Python 2.7
-* Python 3.4
 
 ## Python package dependencies
 * Numpy        (http://docs.scipy.org/doc/numpy-1.10.1/user/install.html)

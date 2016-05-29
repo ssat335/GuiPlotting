@@ -17,14 +17,14 @@ class TestFeaturesAnalyser(unittest.TestCase):
         analyser = FeatureAnalyser()
         data = analyser.process_data(data.transpose())
         (rows, cols) = data.shape
-        for i in [0,32]:
+        for i in range(0, 32):
             plt.figure(i)
             plt.plot(data[i][:])
-        plt.subplots_adjust(wspace=0, hspace=0)
-        plt.figure(51)
-        plt.plot(data[31][:])
-        plt.show()
-        plt.close()
+            plt.figure(i)
+        #plt.subplots_adjust(wspace=0, hspace=0)
+        #plt.plot(data[31][:])
+        #plt.show()
+        #plt.close()
         self.assertTrue(True)
 
 if __name__ == "__main__":
