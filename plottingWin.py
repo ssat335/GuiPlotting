@@ -11,8 +11,16 @@ import numpy as np
 import scipy.io as sio
 import config_global as cg
 
-data = 'data/exp3_A-H-256channels_recording_Elec_data_only'
-#data = 'data/exp7_A-H-256_pacing_recording_17s_period_Elec_data_only'
+"""
+Gastric data
+"""
+#data = 'data/exp3_A-H-256channels_recording_Elec_data_only'
+data = 'data/exp7_A-H-256_pacing_recording_17s_period_Elec_data_only'
+#data = 'data/cardiac_P08_mark'
+
+"""
+Cardiac data
+"""
 mat_contents = sio.loadmat(data)
 
 cg.set_data_file_name((data.rsplit('/', 1)[1]))
@@ -20,6 +28,7 @@ cg.set_test_file_name(str(cg.loaded_data_file) + str('_test.arff'))
 cg.set_training_file_name(str(cg.loaded_data_file) + str('_training.arff'))
 
 vals = np.array(mat_contents['bdfdat'])
+#vals = np.array(mat_contents['mark_cardiac'])
 print len(vals[1, :])
 # Start Qt event loop unless running in interactive mode.
 if __name__ == '__main__':

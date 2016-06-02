@@ -41,16 +41,11 @@ class FeatureAnalyser:
         #    self.features[i + 13, :] = gaussian_filter1d(self.features[int((i-1)/3) + 7, :], 6 * pow(2, ((i - 1) % 3)))
         #self.features[32, :] = np.square(self.features[1, :])
         self.features[8, :] = np.square(self.features[1, :])
-        self.NDT(self.data)
+        self.features[9, :] = self.NDT(self.data)
+        self.features[10,:] = self.ASD(self.data)
+        self.features[11, :] = self.NEO(self.data)
+        #self.features[12, :] = self.data * self.data
         return self.features
-
-    def NDT(self, data):
-        data_ndt = data
-        (rows, cols) = data.shape
-        print rows, cols
-        for i in range(1, cols-1):
-            #data_ndt[rows, i] = (data[rows, i+1] - data[rows, i-1])
-            print ("This is val %5.9f" % data_ndt[i])
 
 
     def apply_diff(self, data):
@@ -66,5 +61,18 @@ class FeatureAnalyser:
             return np.append(data[0][shift_period:], pre_temp)
         else:
             return data
+
+    def NDT(self, data):
+        return self.apply_diff(data)
+
+    def ASD(self, data):
+        return data * self.NDT(data)
+
+    def NEO(self, data):
+        return self.NDT(data) * self.NDT(data) - data * self.NDT(self.NDT(data))
+
+
+
+
 
 

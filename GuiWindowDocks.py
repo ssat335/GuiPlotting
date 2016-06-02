@@ -11,7 +11,7 @@ from multiprocessing import Process
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui
 from pyqtgraph.dockarea import *
-
+import random
 
 # Locally-developed modules
 from TrainingData import TrainingData
@@ -245,12 +245,15 @@ class GuiWindowDocks:
         weka_write.arff_write(event)
 
     def analyse_internal(self):
+        self.s1.clear()
+        self.s2.clear()
         print "Works"
         test_data = np.reshape(self.data, -1)
         data = self.trainingData.plotDat[0][0:self.trainingData.plotLength]
         events = self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5
         training_analyser = FeatureAnalyser()
         training_features_training = training_analyser.process_data([data])
+
         # FeatureAnalyser requires the 1d data to be passed as array of an array
         test_data_analyser = FeatureAnalyser()
         # FeatureAnalyser requires the 1d data to be passed as array of an array
@@ -258,12 +261,32 @@ class GuiWindowDocks:
         classifier = ClassifySlowWavesScikit()
         prediction = classifier.classify_data(training_features_training, events, test_data_features)
         diff = np.diff(prediction)
-        linear_at = np.array(np.where(diff == 1))
+        linear_at_uncorrected = np.array(np.where(diff == 1))
+        rows, cols = linear_at_uncorrected.shape
+        to_remove_index = []
+        for i in range(cols - 1):
+            if linear_at_uncorrected[0][i + 1] - linear_at_uncorrected[0][i] < 60:
+                to_remove_index.append(i + 1)
+        linear_at = np.delete(linear_at_uncorrected, to_remove_index)
+
         pos = []
-        length = len(self.data[1])
+        length = len(self.data[0])
+        sync_events = []
+
+        ''' Check for sync events'''
         for val in linear_at.transpose():
-            pos.append([int(val/length), int(val % length)])
+            sync_events.append(int(val % length))
+        remove_sync_point = set([x for x in sync_events if sync_events.count(x) > 1])
+
+        ''' Remove the sync events from the actual array'''
+        for val in linear_at.transpose():
+            if int(val % length) not in remove_sync_point:
+                pos.append([int(val/length), int(val % length)])
+
         pos_np = np.asarray(pos).transpose()
-        print pos_np.shape
+        if pos_np.size is 0:
+            print "No events detected"
+            return
         self.s1.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
         self.s2.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
+
