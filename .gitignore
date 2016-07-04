@@ -3,3 +3,6 @@
 *.arff*
 *.zip
 *.idea
+*.npy
+*.dat
+*.txt

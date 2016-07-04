@@ -258,11 +258,8 @@ class GuiWindowDocks:
         data = self.trainingData.plotDat[0][0:self.trainingData.plotLength]
         events = self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5
         training_analyser = FeatureAnalyser()
-        training_data_normalised = self.normalise_data(data.reshape(1, data.size))
-        training_features_training = training_analyser.process_data(training_data_normalised)
+        training_features_training = training_analyser.process_data([data])
 
-        data_temp = self.normalise_data(self.data)
-        test_data = np.reshape(data_temp, -1)
         # FeatureAnalyser requires the 1d data to be passed as array of an array
         test_data_analyser = FeatureAnalyser()
         # FeatureAnalyser requires the 1d data to be passed as array of an array
@@ -309,24 +306,4 @@ class GuiWindowDocks:
         self.curve_bottom[1].setData(self.trainingData.plotEvent.flatten()[0:self.trainingData.plotLength])
         self.w3.setXRange(0, self.trainingData.plotLength, padding=0)
         self.w3.setYRange(-10, 10, padding=0)
-
-    def normalise_data(self, data):
-        """
-        Normalise data based on IQR and 1.5 times values
-        :param data:
-        :return:
-        """
-        iqr = np.subtract(*np.percentile(data, [75, 25], axis=1, keepdims=True))
-        [max_, min_] = np.percentile(data, [75, 25], axis=1, keepdims=True)
-        whisker_max = max_ + np.multiply(iqr, 1.5)
-        whisker_min = min_ - np.multiply(iqr, 1.5)
-        [rows, cols] = data.shape
-        for i in range(0, rows):
-            temp = data[i, :]
-            temp[temp > whisker_max[i]] = whisker_max[i]
-            temp[temp < whisker_min[i]] = whisker_min[i]
-            # Normalise here
-            temp = np.divide(np.subtract(temp, whisker_min[i]), whisker_max[i] - whisker_min[i])
-            data[i, :] = temp
-        return data
 
