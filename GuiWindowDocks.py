@@ -11,7 +11,7 @@ from multiprocessing import Process
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui
 from pyqtgraph.dockarea import *
-import random
+import cPickle as pickle
 
 # Locally-developed modules
 from TrainingData import TrainingData
@@ -19,6 +19,7 @@ from ARFFcsvReader import ARFFcsvReader
 from WekaInterface import WekaInterface
 from FeatureAnalyser import FeatureAnalyser
 from ClassifySlowWavesScikit import ClassifySlowWavesScikit
+import config_global as cg
 
 class GuiWindowDocks:
     def __init__(self):
@@ -54,6 +55,9 @@ class GuiWindowDocks:
         self.analyseBtn.clicked.connect(lambda: self.process_data())
         self.readPredictedVal.clicked.connect(lambda: self.read_predicted())
         self.analyseInternal.clicked.connect(lambda: self.analyse_internal())
+        self.save_trained_data.clicked.connect(lambda: self.save_trained())
+        self.load_trained_data.clicked.connect(lambda: self.load_trained())
+
         self.win.show()
 
     def addDockWidgetsControl(self):
@@ -65,13 +69,17 @@ class GuiWindowDocks:
         self.analyseBtn = QtGui.QPushButton('Analyse')
         self.readPredictedVal = QtGui.QPushButton('Read Weka CSV')
         self.analyseInternal = QtGui.QPushButton('SciKit Analyse')
+        self.save_trained_data = QtGui.QPushButton('Save Training')
+        self.load_trained_data = QtGui.QPushButton('Load Training')
         w1.addWidget(label, row=0, col=0)
         w1.addWidget(self.saveBtn_events, row=1, col=0)
-        w1.addWidget(self.saveBtn_nonEvents, row=2, col=0)
-        w1.addWidget(self.undoBtn, row=3, col=0)
-        w1.addWidget(self.analyseBtn, row=4, col=0)
-        w1.addWidget(self.readPredictedVal, row=5,col=0)
-        w1.addWidget(self.analyseInternal, row=6, col=0)
+        w1.addWidget(self.saveBtn_nonEvents, row=1, col=1)
+        w1.addWidget(self.undoBtn, row=2, col=0)
+        w1.addWidget(self.analyseBtn, row=3, col=0)
+        w1.addWidget(self.readPredictedVal, row=4,col=0)
+        w1.addWidget(self.analyseInternal, row=5, col=0)
+        w1.addWidget(self.save_trained_data, row=6, col=0)
+        w1.addWidget(self.load_trained_data, row=6, col=1)
         self.d_control.addWidget(w1, row=1, colspan=2)
 
 
@@ -220,7 +228,7 @@ class GuiWindowDocks:
         for val in linear_at.transpose():
             pos.append([int(val/length), int(val % length)])
         pos_np = np.asarray(pos).transpose()
-        print pos_np.shape
+
         self.s1.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
         self.s2.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
 
@@ -236,7 +244,6 @@ class GuiWindowDocks:
         training_analyser = FeatureAnalyser()
         # FeatureAnalyser requires the 1d data to be passed as array of an array
         training_features = training_analyser.process_data([data])
-        import config_global as cg
         if event is None:
             output_name = cg.test_file_name
         else:
@@ -247,13 +254,15 @@ class GuiWindowDocks:
     def analyse_internal(self):
         self.s1.clear()
         self.s2.clear()
-        print "Works"
-        test_data = np.reshape(self.data, -1)
+        # Deal with training data
         data = self.trainingData.plotDat[0][0:self.trainingData.plotLength]
         events = self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5
         training_analyser = FeatureAnalyser()
-        training_features_training = training_analyser.process_data([data])
+        training_data_normalised = self.normalise_data(data.reshape(1, data.size))
+        training_features_training = training_analyser.process_data(training_data_normalised)
 
+        data_temp = self.normalise_data(self.data)
+        test_data = np.reshape(data_temp, -1)
         # FeatureAnalyser requires the 1d data to be passed as array of an array
         test_data_analyser = FeatureAnalyser()
         # FeatureAnalyser requires the 1d data to be passed as array of an array
@@ -289,4 +298,35 @@ class GuiWindowDocks:
             return
         self.s1.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
         self.s2.addPoints(x=pos_np[1], y=(pos_np[0] * 20))
+
+    def save_trained(self):
+        with open(cg.trained_file, 'wb') as output:
+            pickle.dump(self.trainingData, output, pickle.HIGHEST_PROTOCOL)
+
+    def load_trained(self):
+        self.trainingData = np.load(cg.get_trained_file())
+        self.curve_bottom[0].setData(self.trainingData.plotDat.flatten()[0:self.trainingData.plotLength])
+        self.curve_bottom[1].setData(self.trainingData.plotEvent.flatten()[0:self.trainingData.plotLength])
+        self.w3.setXRange(0, self.trainingData.plotLength, padding=0)
+        self.w3.setYRange(-10, 10, padding=0)
+
+    def normalise_data(self, data):
+        """
+        Normalise data based on IQR and 1.5 times values
+        :param data:
+        :return:
+        """
+        iqr = np.subtract(*np.percentile(data, [75, 25], axis=1, keepdims=True))
+        [max_, min_] = np.percentile(data, [75, 25], axis=1, keepdims=True)
+        whisker_max = max_ + np.multiply(iqr, 1.5)
+        whisker_min = min_ - np.multiply(iqr, 1.5)
+        [rows, cols] = data.shape
+        for i in range(0, rows):
+            temp = data[i, :]
+            temp[temp > whisker_max[i]] = whisker_max[i]
+            temp[temp < whisker_min[i]] = whisker_min[i]
+            # Normalise here
+            temp = np.divide(np.subtract(temp, whisker_min[i]), whisker_max[i] - whisker_min[i])
+            data[i, :] = temp
+        return data
 

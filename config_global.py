@@ -18,6 +18,15 @@ def set_training_file_name(new_name):
     training_file_name = new_name
 
 
+def set_trained_file(new_name):
+    global trained_file
+    trained_file = new_name
+
+
+def get_trained_file():
+    return trained_file
+
+
 def set_test_file_name(new_name):
     global test_file_name
     test_file_name = new_name

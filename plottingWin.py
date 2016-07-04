@@ -26,10 +26,11 @@ mat_contents = sio.loadmat(data)
 cg.set_data_file_name((data.rsplit('/', 1)[1]))
 cg.set_test_file_name(str(cg.loaded_data_file) + str('_test.arff'))
 cg.set_training_file_name(str(cg.loaded_data_file) + str('_training.arff'))
+cg.set_trained_file(str(cg.loaded_data_file) + str('_trained.dat'))
 
 vals = np.array(mat_contents['bdfdat'])
 #vals = np.array(mat_contents['mark_cardiac'])
-print len(vals[1, :])
+
 # Start Qt event loop unless running in interactive mode.
 if __name__ == '__main__':
     import sys
@@ -37,6 +38,6 @@ if __name__ == '__main__':
     """
     Create data here and add to the curve
     """
-    gui.setData(vals[44:52, 0:9001]/100,  8, 9000)
+    gui.setData(vals[44:52, 0:9001]/100, 8, 9000)
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()

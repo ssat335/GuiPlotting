@@ -3,7 +3,7 @@
     Description: A module of generating features for the signals.
 """
 
-from scipy.signal import savgol_filter
+#from scipy.signal import savgol_filter
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter1d
 
@@ -20,11 +20,8 @@ class FeatureAnalyser:
         :param plot: Input values to be processed for generating features
         :return: features in #features X #sample size
         """
-        print plot
         self.data = np.asarray(plot)
-        print self.data.shape
         temp, self.len = self.data.shape
-        print self.len
         '''Obtain the features'''
         self.features = np.zeros([33, self.len], dtype=float)
         self.features[0, :] = self.data
@@ -42,7 +39,7 @@ class FeatureAnalyser:
         #self.features[32, :] = np.square(self.features[1, :])
         self.features[8, :] = np.square(self.features[1, :])
         self.features[9, :] = self.NDT(self.data)
-        self.features[10,:] = self.ASD(self.data)
+        self.features[10, :] = self.ASD(self.data)
         self.features[11, :] = self.NEO(self.data)
         #self.features[12, :] = self.data * self.data
         return self.features
