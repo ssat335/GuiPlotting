@@ -259,10 +259,11 @@ class GuiWindowDocks:
         events = self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5
         training_analyser = FeatureAnalyser()
         training_features_training = training_analyser.process_data([data])
-
+		
         # FeatureAnalyser requires the 1d data to be passed as array of an array
         test_data_analyser = FeatureAnalyser()
         # FeatureAnalyser requires the 1d data to be passed as array of an array
+        test_data = np.reshape(self.data, -1)
         test_data_features = test_data_analyser.process_data([test_data])
         classifier = ClassifySlowWavesScikit()
         prediction = classifier.classify_data(training_features_training, events, test_data_features)
