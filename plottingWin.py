@@ -12,12 +12,26 @@ import scipy.io as sio
 import config_global as cg
 
 """
-Gastric data
+Gastric data pacing
 """
-#data = 'data/exp3_A-H-256channels_recording_Elec_data_only'
-data = 'data/exp7_A-H-256_pacing_recording_17s_period_Elec_data_only'
-#data = 'data/cardiac_P08_mark'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/pacing/pig68/exp7_A-H-256_pacing_recording_17s_period_Elec_dat.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/pacing/pig68/exp6_A-H-256_pacing_recording_15s_period_Elec_dat.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/pacing/pig68/exp5_A-H-256_pacing_recording_13s_period_Elec_dat.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/pacing/pig68/exp4_A-H-256_pacing_recording_Elec_dat.mat'
+data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/pacing/pig71/bdf/pig71_exp7_pcb_A_H_aydinStimbdf_Elec_data.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/pacing/pig51/pig51_exp10_3g3_E32_Elec_data.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/pacing/pig51/pig51_exp11_3g3_E32_Elec_data.mat'
 
+"""
+Gastric data normal
+"""
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/normal/pig68/exp3_A-H-256channels_recording_Elec_data.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/normal/pig41/pig41exp2_Elec_dat.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/normal/pig37/pig37exp1_Elec_dat.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/normal/pig34/pig34exp1_Elec_dat.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/normal/pig32/pig32exp1_Elec_dat.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/normal/pig32/pig32exp2_Elec_dat.mat'
+#data = '/media/hpc/codes/python-spider-projects/GuiPlotting/01092016_data/normal/pig32/pig32exp3_Elec_dat.mat'
 """
 Cardiac data
 """
@@ -38,6 +52,6 @@ if __name__ == '__main__':
     """
     Create data here and add to the curve
     """
-    gui.setData(vals[44:52, 0:9001]/100, 8, 9000)
+    gui.setData(vals[0:12, 0:15001]/100, 10, 15000)
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()

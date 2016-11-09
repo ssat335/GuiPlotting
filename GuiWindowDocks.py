@@ -20,6 +20,7 @@ from WekaInterface import WekaInterface
 from FeatureAnalyser import FeatureAnalyser
 from ClassifySlowWavesScikit import ClassifySlowWavesScikit
 import config_global as cg
+import scipy.io
 
 class GuiWindowDocks:
     def __init__(self):
@@ -73,14 +74,14 @@ class GuiWindowDocks:
         self.load_trained_data = QtGui.QPushButton('Load Training')
         w1.addWidget(label, row=0, col=0)
         w1.addWidget(self.saveBtn_events, row=1, col=0)
-        w1.addWidget(self.saveBtn_nonEvents, row=1, col=1)
-        w1.addWidget(self.undoBtn, row=2, col=0)
-        w1.addWidget(self.analyseBtn, row=3, col=0)
-        w1.addWidget(self.readPredictedVal, row=4,col=0)
-        w1.addWidget(self.analyseInternal, row=5, col=0)
-        w1.addWidget(self.save_trained_data, row=6, col=0)
-        w1.addWidget(self.load_trained_data, row=6, col=1)
-        self.d_control.addWidget(w1, row=1, colspan=2)
+        w1.addWidget(self.saveBtn_nonEvents, row=2, col=0)
+        w1.addWidget(self.undoBtn, row=3, col=0)
+        w1.addWidget(self.analyseBtn, row=4, col=0)
+        w1.addWidget(self.readPredictedVal, row=5,col=0)
+        w1.addWidget(self.analyseInternal, row=6, col=0)
+        w1.addWidget(self.save_trained_data, row=7, col=0)
+        w1.addWidget(self.load_trained_data, row=8, col=0)
+        self.d_control.addWidget(w1, row=1, colspan=1)
 
 
     def addDockWidgetsPlots(self):
@@ -258,13 +259,13 @@ class GuiWindowDocks:
         data = self.trainingData.plotDat[0][0:self.trainingData.plotLength]
         events = self.trainingData.plotEvent[0][0:self.trainingData.plotLength]/5
         training_analyser = FeatureAnalyser()
-        training_features_training = training_analyser.process_data([data])
+        training_features_training = training_analyser.process_data([data],(1,self.trainingData.plotLength))
 		
         # FeatureAnalyser requires the 1d data to be passed as array of an array
         test_data_analyser = FeatureAnalyser()
         # FeatureAnalyser requires the 1d data to be passed as array of an array
         test_data = np.reshape(self.data, -1)
-        test_data_features = test_data_analyser.process_data([test_data])
+        test_data_features = test_data_analyser.process_data([test_data], self.data.shape)
         classifier = ClassifySlowWavesScikit()
         prediction = classifier.classify_data(training_features_training, events, test_data_features)
         diff = np.diff(prediction)
@@ -284,6 +285,9 @@ class GuiWindowDocks:
         for val in linear_at.transpose():
             sync_events.append(int(val % length))
         remove_sync_point = set([x for x in sync_events if sync_events.count(x) > 1])
+        
+        print remove_sync_point
+        #remove_sync_point.clear()
 
         ''' Remove the sync events from the actual array'''
         for val in linear_at.transpose():
@@ -291,6 +295,9 @@ class GuiWindowDocks:
                 pos.append([int(val/length), int(val % length)])
 
         pos_np = np.asarray(pos).transpose()
+        print type(pos_np)
+        scipy.io.savemat(str('activation_points/') + str(cg.loaded_data_file) 
+                    + str('_acti_points.mat'), dict(x=pos_np[1], y=pos_np[0]))
         if pos_np.size is 0:
             print "No events detected"
             return

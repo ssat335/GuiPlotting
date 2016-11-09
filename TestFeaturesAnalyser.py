@@ -10,12 +10,12 @@ import scipy.io as sio
 
 class TestFeaturesAnalyser(unittest.TestCase):
     def test(self):
-        test_data = sio.loadmat('/people/ssat335/PycharmProjects/GuiPlotting/data/training_data_test.mat')
+        test_data = sio.loadmat('training_data_test.mat')
         #print test_data['vect']
         data = np.asarray(test_data['vect'])
         #print data.transpose().shape
         analyser = FeatureAnalyser()
-        data = analyser.process_data(data.transpose())
+        data = analyser.process_data(data, data.shape)
         (rows, cols) = data.shape
         for i in range(0, 12):
             plt.figure(i)
